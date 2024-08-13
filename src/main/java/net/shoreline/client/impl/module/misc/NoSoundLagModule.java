@@ -2,6 +2,7 @@ package net.shoreline.client.impl.module.misc;
 
 import net.minecraft.network.packet.s2c.play.PlaySoundFromEntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.shoreline.client.api.event.listener.EventListener;
@@ -17,7 +18,7 @@ import java.util.Set;
  */
 public class NoSoundLagModule extends ToggleModule {
     //
-    private final static Set<SoundEvent> LAG_SOUNDS = Set.of(
+    private final static Set<RegistryEntry<SoundEvent>> LAG_SOUNDS = Set.of(
             SoundEvents.ITEM_ARMOR_EQUIP_GENERIC,
             SoundEvents.ITEM_ARMOR_EQUIP_ELYTRA,
             SoundEvents.ITEM_ARMOR_EQUIP_NETHERITE,
@@ -39,9 +40,9 @@ public class NoSoundLagModule extends ToggleModule {
     @EventListener
     public void onPacketInbound(PacketEvent.Inbound event) {
         if (event.getPacket() instanceof PlaySoundFromEntityS2CPacket packet
-                && LAG_SOUNDS.contains(packet.getSound().value())
+                && LAG_SOUNDS.contains(packet.getSound())
                 || event.getPacket() instanceof PlaySoundS2CPacket packet2
-                && LAG_SOUNDS.contains(packet2.getSound().value())) {
+                && LAG_SOUNDS.contains(packet2.getSound())) {
             event.cancel();
         }
     }

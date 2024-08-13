@@ -68,21 +68,6 @@ public abstract class MixinClientPlayerInteractionManager implements Globals {
     }
 
     /**
-     * @param cir
-     */
-    @Inject(method = "getReachDistance", at = @At(value = "HEAD"),
-            cancellable = true)
-    private void hookGetReachDistance(CallbackInfoReturnable<Float> cir) {
-        final ReachEvent reachEvent = new ReachEvent();
-        Shoreline.EVENT_HANDLER.dispatch(reachEvent);
-        if (reachEvent.isCanceled()) {
-            cir.cancel();
-            float reach = gameMode.isCreative() ? 5.0f : 4.5f;
-            cir.setReturnValue(reach + reachEvent.getReach());
-        }
-    }
-
-    /**
      * @param player
      * @param hand
      * @param hitResult

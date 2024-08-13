@@ -9,7 +9,6 @@ import net.shoreline.client.api.module.ToggleModule;
 import net.shoreline.client.impl.event.ScreenOpenEvent;
 import net.shoreline.client.impl.event.network.PacketEvent;
 import net.shoreline.client.impl.gui.beacon.BeaconSelectorScreen;
-import net.shoreline.client.mixin.accessor.AccessorUpdateBeaconC2SPacket;
 
 import java.util.Optional;
 
@@ -30,14 +29,6 @@ public class BeaconSelectorModule extends ToggleModule {
     public BeaconSelectorModule() {
         super("BeaconSelector", "Allows you to change beacon effects",
                 ModuleCategory.MISCELLANEOUS);
-    }
-
-    @EventListener
-    public void onPacketOutbound(PacketEvent.Outbound event) {
-        if (event.getPacket() instanceof UpdateBeaconC2SPacket packet) {
-            ((AccessorUpdateBeaconC2SPacket) packet).setPrimaryEffect(Optional.ofNullable(primaryEffect));
-            ((AccessorUpdateBeaconC2SPacket) packet).setSecondaryEffect(Optional.ofNullable(secondaryEffect));
-        }
     }
 
     @EventListener

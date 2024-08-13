@@ -13,6 +13,7 @@ import net.shoreline.client.Shoreline;
 import net.shoreline.client.impl.event.gui.hud.ChatMessageEvent;
 import net.shoreline.client.init.Modules;
 import net.shoreline.client.util.render.animation.TimeAnimation;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -83,20 +84,8 @@ public class MixinChatHud
         return instance.drawTextWithShadow(textRenderer, text, (int) ((animation != null && Modules.BETTER_CHAT.isEnabled() && Modules.BETTER_CHAT.getAnimationConfig().getValue() ? animation.getCurrent() : 0)), y, color);
     }
 
-    /**
-     * @param message
-     * @param signature
-     * @param ticks
-     * @param indicator
-     * @param refresh
-     * @param ci
-     */
-    @Inject(method = "addMessage(Lnet/minecraft/text/Text;Lnet/minecraft/" +
-            "network/message/MessageSignatureData;ILnet/minecraft/client/" +
-            "gui/hud/MessageIndicator;Z)V", at = @At(value = "HEAD"))
-    private void hookAddMessage(Text message, MessageSignatureData signature,
-                                int ticks, MessageIndicator indicator,
-                                boolean refresh, CallbackInfo ci) {
+    @Inject(method = "addMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/message/MessageSignatureData;Lnet/minecraft/client/gui/hud/MessageIndicator;)V", at = @At(value = "HEAD"))
+    private void hookAddMessage(Text message, @Nullable MessageSignatureData signatureData, @Nullable MessageIndicator indicator, CallbackInfo ci) {
         ChatMessageEvent chatMessageEvent = new ChatMessageEvent(message);
         Shoreline.EVENT_HANDLER.dispatch(chatMessageEvent);
     }

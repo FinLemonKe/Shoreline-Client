@@ -1,5 +1,6 @@
 package net.shoreline.client.impl.module.world;
 
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.PotionItem;
 import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
@@ -57,7 +58,7 @@ public final class FastEatModule extends ToggleModule
             return;
         }
         final ItemStack stack = mc.player.getStackInHand(mc.player.getActiveHand());
-        if (stack.isEmpty() || !stack.getItem().isFood())
+        if (stack.isEmpty() || stack.getItem().getComponents().get(DataComponentTypes.FOOD) == null)
         {
             return;
         }
@@ -80,7 +81,7 @@ public final class FastEatModule extends ToggleModule
     public void onSetCurrentHand(SetCurrentHandEvent event) {
         if (modeConfig.getValue() == Mode.SHIFT) {
             ItemStack stack = event.getStackInHand();
-            if (!stack.getItem().isFood() && !(stack.getItem() instanceof PotionItem)) {
+            if (stack.getItem().getComponents().get(DataComponentTypes.FOOD) == null && !(stack.getItem() instanceof PotionItem)) {
                 return;
             }
             int maxUseTime = stack.getMaxUseTime();

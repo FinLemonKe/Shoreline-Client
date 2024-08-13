@@ -1,6 +1,8 @@
 package net.shoreline.client.impl.module.misc;
 
 import net.minecraft.client.option.KeyBinding;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.FoodComponent;
 import net.minecraft.entity.player.HungerManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -74,12 +76,13 @@ public class AutoEatModule extends ToggleModule {
         int slot = -1;
         for (int i = 0; i < 9; i++) {
             ItemStack stack = mc.player.getInventory().getStack(i);
-            if (stack.getItem().isFood()) {
+            if (stack.getItem().getComponents().get(DataComponentTypes.FOOD) != null) {
                 if (stack.getItem() == Items.PUFFERFISH
                         || stack.getItem() == Items.CHORUS_FRUIT) {
                     continue;
                 }
-                int hunger = stack.getItem().getFoodComponent().getHunger();
+
+                int hunger = stack.getItem().getComponents().get(DataComponentTypes.FOOD).nutrition();
                 if (hunger > foodLevel) {
                     slot = i;
                     foodLevel = hunger;
@@ -87,12 +90,12 @@ public class AutoEatModule extends ToggleModule {
             }
         }
         ItemStack offhand = mc.player.getOffHandStack();
-        if (offhand.getItem().isFood()) {
+        if (offhand.getItem().getComponents().get(DataComponentTypes.FOOD) != null) {
             if (offhand.getItem() == Items.PUFFERFISH
                     || offhand.getItem() == Items.CHORUS_FRUIT) {
                 return slot;
             }
-            int hunger = offhand.getItem().getFoodComponent().getHunger();
+            int hunger = offhand.getItem().getComponents().get(DataComponentTypes.FOOD).nutrition();
             if (hunger > foodLevel) {
                 slot = 45;
             }

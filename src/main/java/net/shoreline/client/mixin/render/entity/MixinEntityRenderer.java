@@ -29,8 +29,7 @@ public abstract class MixinEntityRenderer {
      */
     @Inject(method = "renderLabelIfPresent", at = @At(value = "HEAD"),
             cancellable = true)
-    public void hookRenderLabelIfPresent(Entity entity, Text text, MatrixStack matrices,
-                                         VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
+    public void hookRenderLabelIfPresent(Entity entity, Text text, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, float tickDelta, CallbackInfo ci) {
         RenderLabelEvent renderLabelEvent = new RenderLabelEvent(entity);
         Shoreline.EVENT_HANDLER.dispatch(renderLabelEvent);
         if (renderLabelEvent.isCanceled()) {

@@ -305,7 +305,7 @@ public class AuraModule extends RotationModule {
             if (stack.getItem() instanceof SwordItem swordItem) {
                 float sharpness = EnchantmentHelper.getLevel(
                         Enchantments.SHARPNESS, stack) * 0.5f + 0.5f;
-                float dmg = swordItem.getAttackDamage() + sharpness;
+                float dmg = swordItem.getMaterial().getAttackDamage() + sharpness;
                 if (dmg > sharp) {
                     sharp = dmg;
                     slot = i;
@@ -313,7 +313,7 @@ public class AuraModule extends RotationModule {
             } else if (stack.getItem() instanceof AxeItem axeItem) {
                 float sharpness = EnchantmentHelper.getLevel(
                         Enchantments.SHARPNESS, stack) * 0.5f + 0.5f;
-                float dmg = axeItem.getAttackDamage() + sharpness;
+                float dmg = axeItem.getMaterial().getAttackDamage() + sharpness;
                 if (dmg > sharp) {
                     sharp = dmg;
                     slot = i;
@@ -405,7 +405,7 @@ public class AuraModule extends RotationModule {
             }
             if (armorCheckConfig.getValue()
                     && entity instanceof LivingEntity
-                    && !entity.getArmorItems().iterator().hasNext()) {
+                    && !((LivingEntity) entity).getArmorItems().iterator().hasNext()) {
                 continue;
             }
             double dist = pos.distanceTo(entity.getPos());
@@ -462,12 +462,6 @@ public class AuraModule extends RotationModule {
         return isInAttackRange(dist, pos, entityPos);
     }
 
-    /**
-     * @param dist
-     * @param pos
-     * @param entity
-     * @return
-     */
     public boolean isInAttackRange(double dist, Vec3d pos, Vec3d entityPos) {
         if (vanillaRangeConfig.getValue() && dist > 3.0f) {
             return false;

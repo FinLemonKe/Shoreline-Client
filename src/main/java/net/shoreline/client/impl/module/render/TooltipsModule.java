@@ -30,7 +30,7 @@ public class TooltipsModule extends ToggleModule {
                 ModuleCategory.RENDER);
     }
 
-    @EventListener
+/*    @EventListener
     public void onRenderTooltip(RenderTooltipEvent event) {
         final ItemStack stack = event.getStack();
         if (stack.isEmpty()) {
@@ -57,5 +57,5 @@ public class TooltipsModule extends ToggleModule {
             }
             event.context.getMatrices().pop();
         }
-    }
+    }*/
 }

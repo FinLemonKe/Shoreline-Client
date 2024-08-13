@@ -1,6 +1,8 @@
 package net.shoreline.client.impl.module.movement;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.passive.HorseEntity;
 import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.entity.passive.MuleEntity;
@@ -113,10 +115,10 @@ public class StepModule extends ToggleModule {
     }
 
     private void setStepHeight(float stepHeight) {
-        if (entityStepConfig.getValue() && mc.player.getVehicle() != null) {
-            mc.player.getVehicle().setStepHeight(stepHeight);
+        if (entityStepConfig.getValue() && mc.player.getVehicle() != null && mc.player.getVehicle() instanceof LivingEntity owo) {
+            owo.getAttributeInstance(EntityAttributes.GENERIC_STEP_HEIGHT).setBaseValue(stepHeight);
         } else {
-            mc.player.setStepHeight(stepHeight);
+            mc.player.getAttributeInstance(EntityAttributes.GENERIC_STEP_HEIGHT).setBaseValue(stepHeight);
         }
     }
 

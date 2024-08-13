@@ -16,29 +16,5 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(PacketByteBuf.class)
 public abstract class MixinPacketByteBuf {
-    @Shadow
-    @Nullable
-    public abstract NbtElement readNbt(NbtSizeTracker sizeTracker);
 
-    /**
-     *
-     * @param ops
-     * @param codec
-     * @param sizeTracker
-     * @param cir
-     */
-    @Inject(method = "decode(Lcom/mojang/serialization/DynamicOps;Lcom/mojang/" +
-            "serialization/Codec;Lnet/minecraft/nbt/NbtSizeTracker;)Ljava/lang/Object;",
-            at = @At(value = "HEAD"), cancellable = true)
-    private void hookDecode(DynamicOps<NbtElement> ops, Codec<Object> codec,
-                            NbtSizeTracker sizeTracker, CallbackInfoReturnable<Object> cir) {
-        cir.cancel();
-        try
-        {
-            NbtElement nbtElement = readNbt(sizeTracker);
-            cir.setReturnValue(Util.getResult(codec.parse(ops, nbtElement), error -> new DecoderException("Failed to decode: " + error + " " + nbtElement)));
-        } catch (DecoderException e) {
-            cir.setReturnValue(null);
-        }
-    }
 }

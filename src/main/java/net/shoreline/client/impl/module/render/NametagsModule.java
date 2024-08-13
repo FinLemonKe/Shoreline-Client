@@ -7,13 +7,14 @@ import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.EnchantedGoldenAppleItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.RotationAxis;
@@ -163,8 +164,8 @@ public class NametagsModule extends ToggleModule {
         int n11 = 0;
         for (ItemStack stack : displayItems) {
             n10 -= 8;
-            if (stack.getEnchantments().size() > n11) {
-                n11 = stack.getEnchantments().size();
+            if (stack.getEnchantments().getSize() > n11) {
+                n11 = stack.getEnchantments().getSize();
             }
         }
         float m2 = enchantOffset(n11);
@@ -270,20 +271,20 @@ public class NametagsModule extends ToggleModule {
     }
 
     private void renderEnchants(MatrixStack matrixStack, ItemStack itemStack, float x, float y) {
-        if (itemStack.getItem() instanceof EnchantedGoldenAppleItem) {
+        if (itemStack.getItem() == Items.ENCHANTED_GOLDEN_APPLE) {
             Fonts.VANILLA.drawWithShadow(matrixStack, "God", x * 2, y * 2, 0xffc34e41);
             return;
         }
         if (!itemStack.hasEnchantments()) {
             return;
         }
-        Map<Enchantment, Integer> enchants = EnchantmentHelper.get(itemStack);
+        ItemEnchantmentsComponent enchants = EnchantmentHelper.getEnchantments(itemStack);
 
         float n2 = 0;
-        for (Enchantment enchantment : enchants.keySet()) {
-            int lvl = enchants.get(enchantment);
+        for (RegistryEntry<Enchantment> enchantment : enchants.getEnchantments()) {
+            int lvl = enchants.getLevel(enchantment.value());
             StringBuilder enchantString = new StringBuilder();
-            String translatedName = enchantment.getName(lvl).getString();
+            String translatedName = enchantment.value().getName(lvl).getString();
             if (translatedName.contains("Vanish")) {
                 enchantString.append("Van");
             } else if (translatedName.contains("Bind")) {

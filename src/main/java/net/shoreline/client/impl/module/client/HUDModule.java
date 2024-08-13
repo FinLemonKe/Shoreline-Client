@@ -9,6 +9,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Direction;
@@ -147,20 +148,20 @@ public class HUDModule extends ToggleModule {
             }
             if (potionEffectsConfig.getValue()) {
                 for (StatusEffectInstance e : mc.player.getStatusEffects()) {
-                    final StatusEffect effect = e.getEffectType();
+                    final RegistryEntry<StatusEffect> effect = e.getEffectType();
                     if (effect == StatusEffects.NIGHT_VISION) {
                         continue;
                     }
                     boolean amplifier = e.getAmplifier() > 1 && !e.isInfinite();
                     Text duration = StatusEffectUtil.getDurationText(e, 1.0f, mc.world.getTickManager().getTickRate());
                     String text = String.format("%s %s§f%s",
-                            effect.getName().getString(),
+                            effect.value().getName().getString(),
                             amplifier ? e.getAmplifier() + " " : "",
                             e.isInfinite() ? "" : duration.getString());
                     int width = RenderManager.textWidth(text);
                     RenderManager.renderText(event.getContext(), text,
                             res.getScaledWidth() - width - 1.0f, renderingUp ? bottomRight : topRight,
-                            potionColorsConfig.getValue() ? effect.getColor() : getHudColor(rainbowOffset));
+                            potionColorsConfig.getValue() ? effect.value().getColor() : getHudColor(rainbowOffset));
                     if (renderingUp) {
                         bottomRight -= 9.0f;
                     } else {

@@ -195,8 +195,8 @@ public class AutoArmorModule extends ToggleModule {
             final ItemStack otherStack = other.getArmorStack();
             ArmorItem armorItem = (ArmorItem) armorStack.getItem();
             ArmorItem otherItem = (ArmorItem) otherStack.getItem();
-            int durabilityDiff = armorItem.getMaterial().getProtection(armorItem.getType())
-                    - otherItem.getMaterial().getProtection(otherItem.getType());
+            int durabilityDiff = armorItem.getProtection()
+                    - otherItem.getProtection();
             if (durabilityDiff != 0) {
                 return durabilityDiff;
             }
@@ -213,9 +213,10 @@ public class AutoArmorModule extends ToggleModule {
         }
 
         public boolean hasEnchantment(Enchantment enchantment) {
-            Object2IntMap<Enchantment> enchants =
-                    EnchantmentUtil.getEnchantments(armorStack);
-            return enchants.containsKey(enchantment);
+            EnchantmentHelper.getEnchantments(armorStack).getEnchantments().forEach(enchantmentRegistryEntry -> {
+                return ;
+            });
+            return false;
         }
 
         public ItemStack getArmorStack() {

@@ -3,6 +3,7 @@ package net.shoreline.client.mixin.entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.shoreline.client.Shoreline;
@@ -30,7 +31,7 @@ public abstract class MixinLivingEntity extends MixinEntity implements Globals {
      * @return
      */
     @Shadow
-    public abstract boolean hasStatusEffect(StatusEffect effect);
+    public abstract boolean hasStatusEffect(RegistryEntry<StatusEffect> effect);
 
     @Shadow
     public abstract float getYaw(float tickDelta);
@@ -70,10 +71,8 @@ public abstract class MixinLivingEntity extends MixinEntity implements Globals {
      * @param effect
      * @return
      */
-    @Redirect(method = "travel", at = @At(value = "INVOKE", target = "Lnet/" +
-            "minecraft/entity/LivingEntity;hasStatusEffect(Lnet/minecraft/" +
-            "entity/effect/StatusEffect;)Z"))
-    private boolean hookHasStatusEffect(LivingEntity instance, StatusEffect effect) {
+    @Redirect(method = "travel", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;hasStatusEffect(Lnet/minecraft/registry/entry/RegistryEntry;)Z"))
+    private boolean hookHasStatusEffect(LivingEntity instance, RegistryEntry<StatusEffect> effect) {
         if (instance.equals(mc.player)) {
             LevitationEvent levitationEvent = new LevitationEvent();
             Shoreline.EVENT_HANDLER.dispatch(levitationEvent);

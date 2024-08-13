@@ -306,7 +306,7 @@ public class SurroundModule extends ObsidianPlacerModule {
             }
         } else if (event.getPacket() instanceof PlaySoundS2CPacket packet
                 && packet.getCategory() == SoundCategory.BLOCKS
-                && packet.getSound().value() == SoundEvents.ENTITY_GENERIC_EXPLODE) {
+                && packet.getSound().value() == SoundEvents.ENTITY_GENERIC_EXPLODE.value()) {
             BlockPos targetPos = BlockPos.ofFloored(packet.getX(), packet.getY(), packet.getZ());
             if (surround.contains(targetPos)) {
                 blocksPlaced++;

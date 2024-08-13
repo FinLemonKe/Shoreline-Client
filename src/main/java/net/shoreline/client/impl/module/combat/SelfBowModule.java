@@ -1,5 +1,6 @@
 package net.shoreline.client.impl.module.combat;
 
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.BowItem;
@@ -8,7 +9,7 @@ import net.minecraft.item.Items;
 import net.minecraft.item.TippedArrowItem;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionUtil;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -52,10 +53,10 @@ public class SelfBowModule extends RotationModule {
             if (stack.isEmpty() || !(stack.getItem() instanceof TippedArrowItem)) {
                 continue;
             }
-            Potion p = PotionUtil.getPotion(stack);
+            Potion p = stack.get(DataComponentTypes.POTION_CONTENTS).potion().get().value();
             for (StatusEffectInstance effect : p.getEffects()) {
-                StatusEffect type = effect.getEffectType();
-                if (type.isBeneficial() && !arrows.contains(effect)) {
+                RegistryEntry<StatusEffect> type = effect.getEffectType();
+                if (type.value().isBeneficial() && !arrows.contains(effect)) {
                     arrowSlot = i;
                     statusEffect = effect;
                     break;

@@ -6,6 +6,7 @@ import net.minecraft.client.gui.screen.DeathScreen;
 import net.minecraft.client.gui.screen.ingame.SignEditScreen;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.network.packet.c2s.play.*;
@@ -96,7 +97,7 @@ public class NoSlowModule extends ToggleModule {
             if (mc.player.getActiveHand() == Hand.OFF_HAND) {
                 Managers.INVENTORY.setSlotForced(mc.player.getInventory().selectedSlot % 8 + 1);
                 Managers.INVENTORY.syncToClient();
-            } else if (!offHandStack.isFood() && offHandStack.getItem() != Items.BOW && offHandStack.getItem() != Items.CROSSBOW && offHandStack.getItem() != Items.SHIELD) {
+            } else if (offHandStack.getComponents().get(DataComponentTypes.FOOD) == null && offHandStack.getItem() != Items.BOW && offHandStack.getItem() != Items.CROSSBOW && offHandStack.getItem() != Items.SHIELD) {
                 Managers.NETWORK.sendSequencedPacket(id -> new PlayerInteractItemC2SPacket(Hand.OFF_HAND, id));
             }
         }

@@ -7,6 +7,7 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.*;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.*;
 import net.minecraft.world.BlockView;
@@ -97,8 +98,8 @@ public class EndCrystalUtil implements Globals {
             }
         }
         if (entity instanceof LivingEntity livingEntity) {
-            damage = DamageUtil.getDamageLeft((float) damage, getArmor(livingEntity), (float) getAttributeValue(livingEntity, EntityAttributes.GENERIC_ARMOR_TOUGHNESS));
-            damage = getProtectionReduction(entity, damage, damageSource);
+            damage = DamageUtil.getDamageLeft((float) damage, mc.player.getDamageSources().explosion(null), getArmor(livingEntity), (float) getAttributeValue(livingEntity, EntityAttributes.GENERIC_ARMOR_TOUGHNESS));
+            damage = getProtectionReduction(livingEntity, damage, damageSource);
         }
         return Math.max(damage, 0);
     }
@@ -107,24 +108,21 @@ public class EndCrystalUtil implements Globals {
         return (float) Math.floor(getAttributeValue(entity, EntityAttributes.GENERIC_ARMOR));
     }
 
-    private static float getProtectionReduction(Entity player, double damage, DamageSource source) {
+    private static float getProtectionReduction(LivingEntity player, double damage, DamageSource source) {
         int protLevel = EnchantmentHelper.getProtectionAmount(player.getArmorItems(), source);
         return DamageUtil.getInflictedDamage((float) damage, protLevel);
     }
 
-    public static double getAttributeValue(LivingEntity entity, EntityAttribute attribute) {
+    public static double getAttributeValue(LivingEntity entity, RegistryEntry<EntityAttribute> attribute) {
         return getAttributeInstance(entity, attribute).getValue();
     }
 
-    public static EntityAttributeInstance getAttributeInstance(LivingEntity entity, EntityAttribute attribute) {
+    public static EntityAttributeInstance getAttributeInstance(LivingEntity entity, RegistryEntry<EntityAttribute> attribute) {
         double baseValue = getDefaultForEntity(entity).getBaseValue(attribute);
         EntityAttributeInstance attributeInstance = new EntityAttributeInstance(attribute, o1 -> {
         });
         attributeInstance.setBaseValue(baseValue);
         for (var equipmentSlot : EquipmentSlot.values()) {
-            ItemStack stack = entity.getEquippedStack(equipmentSlot);
-            Multimap<EntityAttribute, EntityAttributeModifier> modifiers = stack.getAttributeModifiers(equipmentSlot);
-            for (var modifier : modifiers.get(attribute)) attributeInstance.addTemporaryModifier(modifier);
         }
         return attributeInstance;
     }

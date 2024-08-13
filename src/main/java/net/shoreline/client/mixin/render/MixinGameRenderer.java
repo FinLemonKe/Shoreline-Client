@@ -5,6 +5,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.resource.ResourceFactory;
 import net.minecraft.util.hit.HitResult;
@@ -15,6 +16,7 @@ import net.shoreline.client.impl.event.render.*;
 import net.shoreline.client.impl.event.world.UpdateCrosshairTargetEvent;
 import net.shoreline.client.init.Programs;
 import net.shoreline.client.util.Globals;
+import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -44,13 +46,13 @@ public class MixinGameRenderer implements Globals {
     @Shadow
     private float fovMultiplier;
 
-    @Inject(method = "renderWorld", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/profiler/Profiler;swap(Ljava/lang/String;)V", ordinal = 1))
-    private void hookRenderWorld(float tickDelta, long limitTime, MatrixStack matrices, CallbackInfo ci) {
-        RenderWorldEvent.Game renderWorldEvent = new RenderWorldEvent.Game(matrices, tickDelta);
+    @Inject(method = "renderWorld", at = @At(value = "INVOKE_STRING", target = "Lnet/minecraft/util/profiler/Profiler;swap(Ljava/lang/String;)V", args = {"ldc=hand"}), locals = LocalCapture.CAPTURE_FAILEXCEPTION)
+    private void onRenderWorld(float tickDelta, long limitTime, CallbackInfo ci, boolean bl, Camera camera, Entity entity, double d, Matrix4f matrix4f, MatrixStack matrixStack, float f, float g, Matrix4f matrix4f2) {
+        RenderWorldEvent.Game renderWorldEvent = new RenderWorldEvent.Game(matrixStack, tickDelta);
         Shoreline.EVENT_HANDLER.dispatch(renderWorldEvent);
     }
 
-    @Inject(method = "updateTargetedEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/profiler/Profiler;push(Ljava/lang/String;)V", shift = At.Shift.AFTER))
+    @Inject(method = "updateCrosshairTarget", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/profiler/Profiler;push(Ljava/lang/String;)V", shift = At.Shift.AFTER))
     private void hookUpdateTargetedEntity$1(final float tickDelta, final CallbackInfo info) {
         UpdateCrosshairTargetEvent event = new UpdateCrosshairTargetEvent(tickDelta, client.getCameraEntity());
         Shoreline.EVENT_HANDLER.dispatch(event);
@@ -119,12 +121,8 @@ public class MixinGameRenderer implements Globals {
      * @param tickDelta
      * @param info
      */
-    @Inject(method = "updateTargetedEntity", at = @At(value = "INVOKE",
-            target = "Lnet/minecraft/entity/projectile/ProjectileUtil;raycast" +
-                    "(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/" +
-                    "Vec3d;Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/" +
-                    "math/Box;Ljava/util/function/Predicate;D)Lnet/minecraft/" +
-                    "util/hit/EntityHitResult;"), cancellable = true)
+    @Inject(method = "updateCrosshairTarget", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/client/render/GameRenderer;findCrosshairTarget(Lnet/minecraft/entity/Entity;DDF)Lnet/minecraft/util/hit/HitResult;"), cancellable = true)
     private void hookUpdateTargetedEntity$2(float tickDelta, CallbackInfo info) {
         TargetEntityEvent targetEntityEvent = new TargetEntityEvent();
         Shoreline.EVENT_HANDLER.dispatch(targetEntityEvent);
@@ -132,18 +130,6 @@ public class MixinGameRenderer implements Globals {
             client.getProfiler().pop();
             info.cancel();
         }
-    }
-
-    /**
-     * @param d
-     * @return
-     */
-    @ModifyConstant(method = "updateTargetedEntity", constant = @Constant(doubleValue = 9))
-    private double updateTargetedEntityModifySquaredMaxReach(double d) {
-        ReachEvent reachEvent = new ReachEvent();
-        Shoreline.EVENT_HANDLER.dispatch(reachEvent);
-        double reach = reachEvent.getReach() + 3.0;
-        return reachEvent.isCanceled() ? reach * reach : 9.0;
     }
 
 

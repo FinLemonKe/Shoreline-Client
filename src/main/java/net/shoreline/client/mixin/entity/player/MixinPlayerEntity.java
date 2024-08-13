@@ -11,6 +11,7 @@ import net.shoreline.client.api.event.EventStage;
 import net.shoreline.client.impl.event.entity.player.PlayerJumpEvent;
 import net.shoreline.client.impl.event.entity.player.PushFluidsEvent;
 import net.shoreline.client.impl.event.entity.player.TravelEvent;
+import net.shoreline.client.impl.event.network.ReachEvent;
 import net.shoreline.client.util.Globals;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -107,5 +108,31 @@ public abstract class MixinPlayerEntity extends LivingEntity implements Globals 
         PlayerJumpEvent playerJumpEvent = new PlayerJumpEvent();
         playerJumpEvent.setStage(EventStage.POST);
         Shoreline.EVENT_HANDLER.dispatch(playerJumpEvent);
+    }
+
+    @Inject(method = "getBlockInteractionRange", at = @At(value = "HEAD"), cancellable = true)
+    private void hookGetReachDistance(CallbackInfoReturnable<Double> cir) {
+        if (mc.player == null || mc.world == null) return;
+
+        final ReachEvent reachEvent = new ReachEvent();
+        Shoreline.EVENT_HANDLER.dispatch(reachEvent);
+        if (reachEvent.isCanceled()) {
+            cir.cancel();
+            double reach = mc.player.isCreative() ? 5.0 : 4.5;
+            cir.setReturnValue(reach + reachEvent.getReach());
+        }
+    }
+
+    @Inject(method = "getEntityInteractionRange", at = @At(value = "HEAD"), cancellable = true)
+    private void hookGetEntityReachDistance(CallbackInfoReturnable<Double> cir) {
+        if (mc.player == null || mc.world == null) return;
+
+        final ReachEvent reachEvent = new ReachEvent();
+        Shoreline.EVENT_HANDLER.dispatch(reachEvent);
+        if (reachEvent.isCanceled()) {
+            cir.cancel();
+            double reach = mc.player.isCreative() ? 5.0 : 4.5;
+            cir.setReturnValue(reach + reachEvent.getReach());
+        }
     }
 }

@@ -25,31 +25,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 @Mixin(WorldRenderer.class)
 public class MixinWorldRenderer implements Globals {
-
-    /**
-     * @param matrices
-     * @param tickDelta
-     * @param limitTime
-     * @param renderBlockOutline
-     * @param camera
-     * @param gameRenderer
-     * @param lightmapTextureManager
-     * @param positionMatrix
-     * @param ci
-     */
     @Inject(method = "render", at = @At(value = "RETURN"))
-    private void hookRender(MatrixStack matrices, float tickDelta,
-                            long limitTime, boolean renderBlockOutline,
-                            Camera camera, GameRenderer gameRenderer,
-                            LightmapTextureManager lightmapTextureManager,
-                            Matrix4f positionMatrix, CallbackInfo ci) {
+    private void hookRender(float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f, Matrix4f matrix4f2, CallbackInfo ci) {
         Vec3d pos = mc.getBlockEntityRenderDispatcher().camera.getPos();
-        matrices.translate(-pos.x, -pos.y, -pos.z);
+        MatrixStack m = new MatrixStack();
+        m.translate(-pos.x, -pos.y, -pos.z);
 
         RenderBuffers.preRender();
 
         final RenderWorldEvent renderWorldEvent =
-                new RenderWorldEvent(matrices, tickDelta);
+                new RenderWorldEvent(m, tickDelta);
         Shoreline.EVENT_HANDLER.dispatch(renderWorldEvent);
 
         RenderBuffers.postRender();

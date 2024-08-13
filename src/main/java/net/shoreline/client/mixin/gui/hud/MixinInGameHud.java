@@ -56,8 +56,7 @@ public class MixinInGameHud implements Globals {
      */
     @Inject(method = "renderStatusEffectOverlay", at = @At(value = "HEAD"),
             cancellable = true)
-    private void hookRenderStatusEffectOverlay(DrawContext context,
-                                               CallbackInfo ci) {
+    private void hookRenderStatusEffectOverlay(DrawContext context, float tickDelta, CallbackInfo ci) {
         RenderOverlayEvent.StatusEffect renderOverlayEvent =
                 new RenderOverlayEvent.StatusEffect(context);
         Shoreline.EVENT_HANDLER.dispatch(renderOverlayEvent);

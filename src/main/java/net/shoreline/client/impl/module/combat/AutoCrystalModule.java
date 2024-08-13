@@ -354,7 +354,7 @@ public class AutoCrystalModule extends RotationModule {
             return;
         }
         if (event.getPacket() instanceof PlaySoundS2CPacket packet && packet.getCategory() == SoundCategory.BLOCKS
-                && packet.getSound().value() == SoundEvents.ENTITY_GENERIC_EXPLODE) {
+                && packet.getSound().value() == SoundEvents.ENTITY_GENERIC_EXPLODE.value()  ) {
             for (Entity entity : Lists.newArrayList(mc.world.getEntities())) {
                 if (entity instanceof EndCrystalEntity && entity.squaredDistanceTo(packet.getX(), packet.getY(), packet.getZ()) < 144.0) {
                     mc.executeSync(() -> {
